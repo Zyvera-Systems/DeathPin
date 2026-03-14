@@ -1,0 +1,106 @@
+# ─────────────────────────────────────────────
+#   DeathPin  ·  Configuration
+#   Authors: Zyvera-Systems, Thomas U.
+# ─────────────────────────────────────────────
+
+# ── Death Message ─────────────────────────────
+message:
+  # Show coordinates in the death message
+  show_coordinates: true
+  # Show compass direction (N / NE / E / SE / S / SW / W / NW)
+  show_direction: true
+  # Show the world name in the death message
+  show_world: false
+
+# ── Particle Trail ────────────────────────────
+trail:
+  # Enable trail feature globally
+  enabled: true
+
+  # Particle type. Common choices:
+  #   END_ROD  – bright white moving dots (recommended)
+  #   FLAME    – orange fire particles
+  #   SOUL     – eerie soul fire
+  #   SPELL_WITCH – purple magic
+  #   CRIT     – yellow crit sparks
+  #   VILLAGER_HAPPY – green sparkles
+  # For colored dust use DUST and configure dust_color below.
+  particle: END_ROD
+
+  # Only used when particle is DUST or FALLING_DUST
+  dust_color: "255,80,80"   # R,G,B
+  dust_size: 1.2
+
+  # Height above the player's feet at which particles spawn (in blocks)
+
+  # How many blocks ahead of the player the trail extends
+  trail_length: 9.0
+
+  # Distance between each particle dot (in blocks). Lower = denser trail.
+  spacing: 0.5
+
+  # Offset from the player before the trail starts (to avoid spawning inside them)
+  start_offset: 1.8
+
+  # How often particles are displayed (in ticks, 20 ticks = 1 second)
+  update_ticks: 3
+
+  # How often the path is fully recomputed (in ticks).
+  # Obstacle-avoidance and ground-scan run here. Default: 40 = 2 seconds.
+  recalculate_ticks: 30
+
+  # Maximum distance from the death location at which the trail is still active.
+  # Beyond this the trail will still run but you'll only see the first few dots
+  # pointing in the right direction.
+  max_range: 300
+
+  # Distance at which the trail auto-stops and announces arrival (blocks)
+  arrival_distance: 2.5
+
+# ── Particles per update ─────────────────────
+# Number of extra particle "copies" spawned per point (spread = 0 recommended)
+particle_count: 1
+
+# ── Worlds ────────────────────────────────────
+# If true, cross-world trail is supported (needs deathpin.bypass.world permission)
+allow_cross_world: false
+
+# ── Misc ──────────────────────────────────────
+# Play a sound when the trail is toggled
+sound:
+  on_activate: ENTITY_EXPERIENCE_ORB_PICKUP
+  on_deactivate: BLOCK_NOTE_BLOCK_BASS
+  on_arrival: ENTITY_PLAYER_LEVELUP
+
+# ─────────────────────────────────────────────
+#   Messages  (supports MiniMessage format)
+# ─────────────────────────────────────────────
+messages:
+  prefix: "<dark_gray>[<red>✝</red> <white>DeathPin</white><dark_gray>] "
+
+  death_header: "<red><bold>☠ Du bist gestorben!</bold></red>"
+  death_location: "<gray>Todesstelle: <white>X: <x>  Y: <y>  Z: <z></white>"
+  death_direction: "<gray>Richtung: <white><direction></white>"
+  death_world: "<gray>Welt: <white><world></white>"
+  death_click_button: "<yellow>[<bold>✦ Partikelspur aktivieren</bold>]</yellow>"
+  death_click_hover: "<gray>Klicke, um die Partikelspur\nzu deiner Todesstelle zu aktivieren."
+  death_click_command: "/deathpin show"
+
+  trail_activated: "<green>✔ Partikelspur aktiviert. Folge den Partikeln!"
+  trail_deactivated: "<yellow>✖ Partikelspur deaktiviert."
+  trail_already_active: "<yellow>⚠ Die Partikelspur ist bereits aktiv."
+  trail_not_active: "<yellow>⚠ Du hast gerade keine aktive Partikelspur."
+  trail_no_death: "<red>⚠ Es ist kein Todesstelle gespeichert."
+  trail_arrived: "<green><bold>✔ Du hast deine Todesstelle erreicht!</bold></green>"
+  trail_different_world: "<red>⚠ Deine Todesstelle ist in einer anderen Welt (<world>)."
+
+  info_header: "<dark_gray>──── <red>✝ DeathPin</red> ────"
+  info_no_death: "<gray>Keine Todesstelle vorhanden."
+  info_location: "<gray>Letzte Todesstelle: <white>X:<x> Y:<y> Z:<z></white> (<world>)"
+  info_trail_active: "<gray>Partikelspur: <green>aktiv</green>"
+  info_trail_inactive: "<gray>Partikelspur: <red>inaktiv</red>"
+
+  cmd_usage: "<red>Verwendung: /deathpin <show|hide|info|reload>"
+  cmd_no_permission: "<red>⚠ Du hast keine Berechtigung dafür."
+  cmd_players_only: "<red>⚠ Nur für Spieler."
+  config_reloaded: "<green>✔ Konfiguration neu geladen."
