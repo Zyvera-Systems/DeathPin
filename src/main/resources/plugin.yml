@@ -1,0 +1,25 @@
+name: DeathPin
+version: '${project.version}'
+main: dev.zyvera_systems.deathpin.DeathPinPlugin
+api-version: '1.20'
+authors: [ Zyvera-Systems, Thomas U. ]
+description: "Clickable death message with particle trail guide to your death location."
+website: https://github.com/Zyvera-Systems/DeathPin
+
+commands:
+  deathpin:
+    description: "Manage your DeathPin trail and death info."
+    usage: "/deathpin <show|hide|info|reload>"
+    aliases: [ dp, pin, dpin ]
+    permission: deathpin.use
+
+permissions:
+  deathpin.use:
+    description: "Allows using DeathPin commands."
+    default: true
+  deathpin.reload:
+    description: "Allows reloading the DeathPin config."
+    default: op
+  deathpin.bypass.world:
+    description: "Trail works across different worlds."
+    default: op
