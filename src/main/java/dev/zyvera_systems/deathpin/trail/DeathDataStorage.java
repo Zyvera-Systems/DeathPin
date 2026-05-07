@@ -15,39 +15,35 @@ import java.util.logging.Level;
 
 final class DeathDataStorage {
 
-    private static final String FILE_NAME = "deaths.yml";
-    private static final String ROOT      = "deaths";
-
     private final DeathPinPlugin    plugin;
     private final File              file;
     private       YamlConfiguration yaml;
 
     DeathDataStorage(DeathPinPlugin plugin) {
         this.plugin = plugin;
-        this.file   = new File(plugin.getDataFolder(), FILE_NAME);
+        this.file   = new File(plugin.getDataFolder(), "deaths.yml");
+        ensureLoaded();
     }
 
     Map<UUID, Location> loadAll() {
-        reload();
         Map<UUID, Location> result = new HashMap<>();
 
-        if (!yaml.contains(ROOT)) return result;
+        if (!yaml.contains("deaths")) return result;
 
-        for (String key : yaml.getConfigurationSection(ROOT).getKeys(false)) {
+        for (String key : yaml.getConfigurationSection("deaths").getKeys(false)) {
             try {
-                UUID   uuid  = UUID.fromString(key);
-                String wName = yaml.getString(ROOT + "." + key + ".world");
-                World  world = Bukkit.getWorld(wName);
+                UUID  id    = UUID.fromString(key);
+                World world = Bukkit.getWorld(yaml.getString("deaths." + key + ".world", ""));
                 if (world == null) {
-                    plugin.getLogger().warning("World '" + wName + "' not found for " + key + ", skipping.");
+                    plugin.getLogger().warning("World not found for player " + key + " – skipping.");
                     continue;
                 }
-                result.put(uuid, new Location(world,
-                        yaml.getDouble(ROOT + "." + key + ".x"),
-                        yaml.getDouble(ROOT + "." + key + ".y"),
-                        yaml.getDouble(ROOT + "." + key + ".z"),
-                        (float) yaml.getDouble(ROOT + "." + key + ".yaw"),
-                        (float) yaml.getDouble(ROOT + "." + key + ".pitch")
+                result.put(id, new Location(world,
+                        yaml.getDouble("deaths." + key + ".x"),
+                        yaml.getDouble("deaths." + key + ".y"),
+                        yaml.getDouble("deaths." + key + ".z"),
+                        (float) yaml.getDouble("deaths." + key + ".yaw"),
+                        (float) yaml.getDouble("deaths." + key + ".pitch")
                 ));
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().warning("Invalid UUID in deaths.yml: " + key);
@@ -58,38 +54,27 @@ final class DeathDataStorage {
 
     void save(UUID id, Location loc) {
         if (loc.getWorld() == null) return;
-        String path = ROOT + "." + id;
-        yaml.set(path + ".world", loc.getWorld().getName());
-        yaml.set(path + ".x",     loc.getX());
-        yaml.set(path + ".y",     loc.getY());
-        yaml.set(path + ".z",     loc.getZ());
-        yaml.set(path + ".yaw",   (double) loc.getYaw());
-        yaml.set(path + ".pitch", (double) loc.getPitch());
+        String p = "deaths." + id;
+        yaml.set(p + ".world", loc.getWorld().getName());
+        yaml.set(p + ".x",     loc.getX());
+        yaml.set(p + ".y",     loc.getY());
+        yaml.set(p + ".z",     loc.getZ());
+        yaml.set(p + ".yaw",   (double) loc.getYaw());
+        yaml.set(p + ".pitch", (double) loc.getPitch());
         flush();
     }
 
-    void remove(UUID id) {
-        yaml.set(ROOT + "." + id, null);
-        flush();
-    }
-
-    private void reload() {
+    private void ensureLoaded() {
         if (!file.exists()) {
             plugin.getDataFolder().mkdirs();
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, "Could not create deaths.yml", e);
-            }
+            try { file.createNewFile(); }
+            catch (IOException e) { plugin.getLogger().log(Level.SEVERE, "Cannot create deaths.yml", e); }
         }
         yaml = YamlConfiguration.loadConfiguration(file);
     }
 
     private void flush() {
-        try {
-            yaml.save(file);
-        } catch (IOException e) {
-            plugin.getLogger().log(Level.SEVERE, "Could not save deaths.yml", e);
-        }
+        try { yaml.save(file); }
+        catch (IOException e) { plugin.getLogger().log(Level.SEVERE, "Cannot save deaths.yml", e); }
     }
 }
