@@ -1,7 +1,7 @@
 name: DeathPin
 version: '${project.version}'
 main: dev.zyvera_systems.deathpin.DeathPinPlugin
-api-version: '1.20'
+api-version: '1.21'
 authors: [ Zyvera-Systems, Thomas U. ]
 description: "Clickable death message + particle trail back to your death location."
 website: https://modrinth.com/plugin/deathpin
