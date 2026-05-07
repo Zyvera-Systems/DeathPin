@@ -20,22 +20,14 @@ public final class ConfigManager {
     private final DeathPinPlugin plugin;
     private final MiniMessage    mm = MiniMessage.miniMessage();
 
-    private boolean  showCoordinates;
-    private boolean  showDirection;
-    private boolean  showWorld;
+    private boolean  showCoordinates, showDirection, showWorld;
     private boolean  trailEnabled;
     private Particle trailParticle;
     private Color    dustColor;
     private float    dustSize;
-    private double   trailLength;
-    private double   spacing;
-    private double   startOffset;
-    private int      updateTicks;
-    private int      recalculateTicks;
-    private double   arrivalDistance;
-    private String   soundActivate;
-    private String   soundDeactivate;
-    private String   soundArrival;
+    private double   trailLength, spacing, startOffset, arrivalDistance;
+    private int      updateTicks, recalculateTicks;
+    private String   soundActivate, soundDeactivate, soundArrival;
     private String   prefix;
 
     public ConfigManager(DeathPinPlugin plugin) {
@@ -45,40 +37,39 @@ public final class ConfigManager {
 
     public void reload() {
         plugin.reloadConfig();
-        FileConfiguration cfg = plugin.getConfig();
+        FileConfiguration c = plugin.getConfig();
 
-        showCoordinates  = cfg.getBoolean("message.show_coordinates", true);
-        showDirection    = cfg.getBoolean("message.show_direction",   true);
-        showWorld        = cfg.getBoolean("message.show_world",       false);
+        showCoordinates  = c.getBoolean("message.show_coordinates", true);
+        showDirection    = c.getBoolean("message.show_direction",   true);
+        showWorld        = c.getBoolean("message.show_world",       false);
 
-        trailEnabled     = cfg.getBoolean("trail.enabled",              true);
-        trailParticle    = parseParticle(cfg.getString("trail.particle", "END_ROD"));
-        dustColor        = parseDustColor(cfg.getString("trail.dust_color", "255,80,80"));
-        dustSize         = (float) cfg.getDouble("trail.dust_size",     1.2);
-        trailLength      = cfg.getDouble("trail.trail_length",          9.0);
-        spacing          = cfg.getDouble("trail.spacing",               0.5);
-        startOffset      = cfg.getDouble("trail.start_offset",          1.8);
-        updateTicks      = Math.max(1, cfg.getInt("trail.update_ticks",       3));
-        recalculateTicks = Math.max(updateTicks, cfg.getInt("trail.recalculate_ticks", 30));
-        arrivalDistance  = cfg.getDouble("trail.arrival_distance",      2.5);
+        trailEnabled     = c.getBoolean("trail.enabled",             true);
+        trailParticle    = parseParticle(c.getString("trail.particle", "END_ROD"));
+        dustColor        = parseDustColor(c.getString("trail.dust_color", "255,80,80"));
+        dustSize         = (float) c.getDouble("trail.dust_size",    1.2);
+        trailLength      = c.getDouble("trail.trail_length",         9.0);
+        spacing          = c.getDouble("trail.spacing",              0.5);
+        startOffset      = c.getDouble("trail.start_offset",         1.8);
+        updateTicks      = Math.max(1, c.getInt("trail.update_ticks",       3));
+        recalculateTicks = Math.max(updateTicks, c.getInt("trail.recalculate_ticks", 30));
+        arrivalDistance  = c.getDouble("trail.arrival_distance",     2.5);
 
-        soundActivate    = cfg.getString("sound.on_activate",   "ENTITY_EXPERIENCE_ORB_PICKUP");
-        soundDeactivate  = cfg.getString("sound.on_deactivate", "BLOCK_NOTE_BLOCK_BASS");
-        soundArrival     = cfg.getString("sound.on_arrival",    "ENTITY_PLAYER_LEVELUP");
+        soundActivate    = c.getString("sound.on_activate",   "ENTITY_EXPERIENCE_ORB_PICKUP");
+        soundDeactivate  = c.getString("sound.on_deactivate", "BLOCK_NOTE_BLOCK_BASS");
+        soundArrival     = c.getString("sound.on_arrival",    "ENTITY_PLAYER_LEVELUP");
 
-        prefix = cfg.getString("messages.prefix",
+        prefix = c.getString("messages.prefix",
                 "<dark_gray>[<red>✝</red> <white>DeathPin</white><dark_gray>] ");
     }
 
     public Component msg(String key, TagResolver... resolvers) {
-        FileConfiguration cfg = plugin.getConfig();
-        String raw = cfg.getString("messages." + key, "<red>[DeathPin] Missing: " + key);
+        String raw = plugin.getConfig().getString("messages." + key, "<red>[DeathPin] Missing: " + key);
         if (!NO_PREFIX.contains(key)) raw = prefix + raw;
         return mm.deserialize(raw, resolvers);
     }
 
-    public Component msg(String key, String placeholder, String value) {
-        return msg(key, Placeholder.unparsed(placeholder, value));
+    public Component msg(String key, String tag, String value) {
+        return msg(key, Placeholder.unparsed(tag, value));
     }
 
     public String rawMsg(String key) {
@@ -106,19 +97,15 @@ public final class ConfigManager {
         try {
             return Particle.valueOf(name.toUpperCase());
         } catch (IllegalArgumentException e) {
-            plugin.getLogger().warning("Unknown particle '" + name + "', falling back to END_ROD.");
+            plugin.getLogger().warning("Unknown particle '" + name + "', using END_ROD.");
             return Particle.END_ROD;
         }
     }
 
     private Color parseDustColor(String raw) {
         try {
-            String[] parts = raw.split(",");
-            return Color.fromRGB(
-                    Integer.parseInt(parts[0].trim()),
-                    Integer.parseInt(parts[1].trim()),
-                    Integer.parseInt(parts[2].trim())
-            );
+            String[] p = raw.split(",");
+            return Color.fromRGB(Integer.parseInt(p[0].trim()), Integer.parseInt(p[1].trim()), Integer.parseInt(p[2].trim()));
         } catch (Exception e) {
             plugin.getLogger().warning("Invalid dust_color '" + raw + "', using red.");
             return Color.fromRGB(255, 80, 80);

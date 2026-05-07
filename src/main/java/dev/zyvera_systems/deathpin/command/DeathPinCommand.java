@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 
 public final class DeathPinCommand implements CommandExecutor, TabCompleter {
 
-    private static final List<String> SUBS_PLAYER = List.of("show", "hide", "info");
-    private static final List<String> SUBS_OP     = List.of("show", "hide", "info", "reload");
+    private static final List<String> PLAYER_SUBS = List.of("show", "hide", "info");
+    private static final List<String> OP_SUBS     = List.of("show", "hide", "info", "reload");
 
     private final DeathPinPlugin plugin;
 
@@ -30,7 +30,7 @@ public final class DeathPinCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command,
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd,
                              @NotNull String label, @NotNull String[] args) {
         ConfigManager      cfg = plugin.getConfigManager();
         ParticleTrailManager mgr = plugin.getTrailManager();
@@ -43,19 +43,19 @@ public final class DeathPinCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0].toLowerCase()) {
-            case "show", "start", "on", "enable", "activate" -> {
+            case "show", "start", "on", "activate" -> {
                 if (!(sender instanceof Player p)) { sender.sendMessage(cfg.msg("cmd_players_only")); return true; }
-                if (!p.hasPermission("deathpin.use")) { p.sendMessage(cfg.msg("cmd_no_permission")); return true; }
+                if (!p.hasPermission("deathpin.use"))  { p.sendMessage(cfg.msg("cmd_no_permission")); return true; }
                 mgr.startTrail(p);
             }
-            case "hide", "stop", "off", "disable", "deactivate" -> {
+            case "hide", "stop", "off", "deactivate" -> {
                 if (!(sender instanceof Player p)) { sender.sendMessage(cfg.msg("cmd_players_only")); return true; }
-                if (!p.hasPermission("deathpin.use")) { p.sendMessage(cfg.msg("cmd_no_permission")); return true; }
+                if (!p.hasPermission("deathpin.use"))  { p.sendMessage(cfg.msg("cmd_no_permission")); return true; }
                 if (!mgr.stopTrail(p)) p.sendMessage(cfg.msg("trail_not_active"));
             }
             case "info" -> {
                 if (!(sender instanceof Player p)) { sender.sendMessage(cfg.msg("cmd_players_only")); return true; }
-                sendInfo(p);
+                showInfo(p);
             }
             case "reload" -> {
                 if (!sender.hasPermission("deathpin.reload")) { sender.sendMessage(cfg.msg("cmd_no_permission")); return true; }
@@ -69,34 +69,29 @@ public final class DeathPinCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command,
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd,
                                                 @NotNull String label, @NotNull String[] args) {
         if (args.length != 1) return Collections.emptyList();
-        List<String> options = sender.hasPermission("deathpin.reload") ? SUBS_OP : SUBS_PLAYER;
-        String partial = args[0].toLowerCase();
-        return options.stream().filter(s -> s.startsWith(partial)).collect(Collectors.toList());
+        List<String> opts = sender.hasPermission("deathpin.reload") ? OP_SUBS : PLAYER_SUBS;
+        return opts.stream().filter(s -> s.startsWith(args[0].toLowerCase())).collect(Collectors.toList());
     }
 
-    private void sendInfo(Player player) {
+    private void showInfo(Player player) {
         ConfigManager      cfg = plugin.getConfigManager();
         ParticleTrailManager mgr = plugin.getTrailManager();
         Location           loc = mgr.getDeathLocation(player.getUniqueId());
 
         player.sendMessage(cfg.msg("info_header"));
 
-        if (loc == null) {
-            player.sendMessage(cfg.msg("info_no_death"));
-            return;
-        }
+        if (loc == null) { player.sendMessage(cfg.msg("info_no_death")); return; }
 
         player.sendMessage(cfg.msg("info_location",
-                Placeholder.unparsed("x",     DirectionUtil.coord(loc.getX())),
-                Placeholder.unparsed("y",     DirectionUtil.coord(loc.getY())),
-                Placeholder.unparsed("z",     DirectionUtil.coord(loc.getZ())),
+                Placeholder.unparsed("x",     DirectionUtil.blockCoord(loc.getX())),
+                Placeholder.unparsed("y",     DirectionUtil.blockCoord(loc.getY())),
+                Placeholder.unparsed("z",     DirectionUtil.blockCoord(loc.getZ())),
                 Placeholder.unparsed("world", loc.getWorld() != null ? loc.getWorld().getName() : "?")
         ));
 
-        player.sendMessage(cfg.msg(mgr.hasActiveTrail(player.getUniqueId())
-                ? "info_trail_active" : "info_trail_inactive"));
+        player.sendMessage(cfg.msg(mgr.hasActiveTrail(player.getUniqueId()) ? "info_trail_active" : "info_trail_inactive"));
     }
 }
