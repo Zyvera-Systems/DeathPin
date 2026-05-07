@@ -47,15 +47,16 @@ messages:
   death_location: "<gray>Todesstelle: <white>X: <x>  Y: <y>  Z: <z></white>"
   death_direction: "<gray>Richtung: <white><direction></white>"
   death_world: "<gray>Welt: <white><world></white>"
+
   death_click_button: "<yellow>[<bold>✦ Partikelspur aktivieren</bold>]</yellow>"
-  death_click_hover: "<gray>Klicke, um die Partikelspur\nzu deiner Todesstelle zu aktivieren."
+  death_click_hover: "<gray>Klicke, um zur Todesstelle geführt zu werden."
   death_click_command: "/deathpin show"
 
   trail_activated: "<green>✔ Partikelspur aktiviert. Folge den Partikeln!"
   trail_deactivated: "<yellow>✖ Partikelspur deaktiviert."
   trail_already_active: "<yellow>⚠ Die Partikelspur ist bereits aktiv."
   trail_not_active: "<yellow>⚠ Du hast gerade keine aktive Partikelspur."
-  trail_no_death: "<red>⚠ Es ist kein Todesstelle gespeichert."
+  trail_no_death: "<red>⚠ Keine Todesstelle gespeichert."
   trail_arrived: "<green><bold>✔ Du hast deine Todesstelle erreicht!</bold></green>"
   trail_different_world: "<red>⚠ Deine Todesstelle ist in einer anderen Welt (<world>)."
 
@@ -66,6 +67,6 @@ messages:
   info_trail_inactive: "<gray>Partikelspur: <red>inaktiv</red>"
 
   cmd_usage: "<red>Verwendung: /deathpin <show|hide|info|reload>"
-  cmd_no_permission: "<red>⚠ Du hast keine Berechtigung dafür."
+  cmd_no_permission: "<red>⚠ Keine Berechtigung."
   cmd_players_only: "<red>⚠ Nur für Spieler."
   config_reloaded: "<green>✔ Konfiguration neu geladen."
