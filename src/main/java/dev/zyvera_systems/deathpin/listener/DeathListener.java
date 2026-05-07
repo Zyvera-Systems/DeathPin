@@ -3,7 +3,7 @@ package dev.zyvera_systems.deathpin.listener;
 import dev.zyvera_systems.deathpin.DeathPinPlugin;
 import dev.zyvera_systems.deathpin.config.ConfigManager;
 import dev.zyvera_systems.deathpin.util.DirectionUtil;
-import dev.zyvera_systems.deathpin.util.SchedulerUtil;
+import dev.zyvera_systems.deathpin.util.PlatformScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -37,9 +37,7 @@ public final class DeathListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        // Delay by 2 ticks so the message appears after the respawn screen clears.
-        // SchedulerUtil ensures this is safe on both Paper/Spigot and Folia.
-        SchedulerUtil.runDelayed(plugin, player, () -> {
+        PlatformScheduler.runDelayed(plugin, player, () -> {
             if (player.isOnline()) sendDeathMessage(player);
         }, 2L);
     }
@@ -60,29 +58,26 @@ public final class DeathListener implements Listener {
 
         if (cfg.isShowCoordinates()) {
             player.sendMessage(cfg.msg("death_location",
-                    Placeholder.unparsed("x", DirectionUtil.coord(loc.getX())),
-                    Placeholder.unparsed("y", DirectionUtil.coord(loc.getY())),
-                    Placeholder.unparsed("z", DirectionUtil.coord(loc.getZ()))
+                    Placeholder.unparsed("x", DirectionUtil.blockCoord(loc.getX())),
+                    Placeholder.unparsed("y", DirectionUtil.blockCoord(loc.getY())),
+                    Placeholder.unparsed("z", DirectionUtil.blockCoord(loc.getZ()))
             ));
         }
 
         if (cfg.isShowDirection()) {
             player.sendMessage(cfg.msg("death_direction",
-                    Placeholder.unparsed("direction", DirectionUtil.getDirection(player.getLocation(), loc))
+                    Placeholder.unparsed("direction", DirectionUtil.bearing(player.getLocation(), loc))
             ));
         }
 
         if (cfg.isShowWorld() && loc.getWorld() != null) {
-            player.sendMessage(cfg.msg("death_world",
-                    Placeholder.unparsed("world", loc.getWorld().getName())
-            ));
+            player.sendMessage(cfg.msg("death_world", "world", loc.getWorld().getName()));
         }
 
         if (cfg.isTrailEnabled()) {
             Component button = cfg.msg("death_click_button")
                     .clickEvent(ClickEvent.runCommand(cfg.rawMsg("death_click_command")))
                     .hoverEvent(HoverEvent.showText(mm.deserialize(cfg.rawMsg("death_click_hover"))));
-
             player.sendMessage(Component.empty());
             player.sendMessage(button);
         }

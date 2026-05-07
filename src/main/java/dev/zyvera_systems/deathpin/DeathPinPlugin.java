@@ -4,7 +4,7 @@ import dev.zyvera_systems.deathpin.command.DeathPinCommand;
 import dev.zyvera_systems.deathpin.config.ConfigManager;
 import dev.zyvera_systems.deathpin.listener.DeathListener;
 import dev.zyvera_systems.deathpin.trail.ParticleTrailManager;
-import dev.zyvera_systems.deathpin.util.SchedulerUtil;
+import dev.zyvera_systems.deathpin.util.PlatformScheduler;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,7 +35,7 @@ public final class DeathPinPlugin extends JavaPlugin {
         }
 
         getLogger().info("DeathPin v" + getDescription().getVersion()
-                + " enabled (Folia: " + SchedulerUtil.isFolia() + ")");
+                + " enabled (Folia: " + PlatformScheduler.isFolia() + ")");
     }
 
     @Override
