@@ -17,64 +17,29 @@ trail:
   # Enable trail feature globally
   enabled: true
 
-  # Particle type. Common choices:
-  #   END_ROD  – bright white moving dots (recommended)
-  #   FLAME    – orange fire particles
-  #   SOUL     – eerie soul fire
-  #   SPELL_WITCH – purple magic
-  #   CRIT     – yellow crit sparks
-  #   VILLAGER_HAPPY – green sparkles
-  # For colored dust use DUST and configure dust_color below.
+  # Particle type. Common values:
+  #   END_ROD, FLAME, SOUL, DUST (colored), SPELL_WITCH, VILLAGER_HAPPY
   particle: END_ROD
 
-  # Only used when particle is DUST or FALLING_DUST
-  dust_color: "255,80,80"   # R,G,B
+  # Only used when particle is DUST
+  dust_color: "255,80,80"
   dust_size: 1.2
 
-  # Height above the player's feet at which particles spawn (in blocks)
+  trail_length: 9.0       # blocks ahead the trail extends
+  spacing: 0.5            # gap between each particle
+  start_offset: 1.8       # distance in front of player before trail starts
 
-  # How many blocks ahead of the player the trail extends
-  trail_length: 9.0
+  update_ticks: 3         # how often particles are displayed (3 = 150ms)
+  recalculate_ticks: 30   # how often the path is recomputed (30 = 1.5s)
 
-  # Distance between each particle dot (in blocks). Lower = denser trail.
-  spacing: 0.5
+  arrival_distance: 2.5   # distance at which the trail auto-stops
 
-  # Offset from the player before the trail starts (to avoid spawning inside them)
-  start_offset: 1.8
-
-  # How often particles are displayed (in ticks, 20 ticks = 1 second)
-  update_ticks: 3
-
-  # How often the path is fully recomputed (in ticks).
-  # Obstacle-avoidance and ground-scan run here. Default: 40 = 2 seconds.
-  recalculate_ticks: 30
-
-  # Maximum distance from the death location at which the trail is still active.
-  # Beyond this the trail will still run but you'll only see the first few dots
-  # pointing in the right direction.
-  max_range: 300
-
-  # Distance at which the trail auto-stops and announces arrival (blocks)
-  arrival_distance: 2.5
-
-# ── Particles per update ─────────────────────
-# Number of extra particle "copies" spawned per point (spread = 0 recommended)
-particle_count: 1
-
-# ── Worlds ────────────────────────────────────
-# If true, cross-world trail is supported (needs deathpin.bypass.world permission)
-allow_cross_world: false
-
-# ── Misc ──────────────────────────────────────
-# Play a sound when the trail is toggled
 sound:
   on_activate: ENTITY_EXPERIENCE_ORB_PICKUP
   on_deactivate: BLOCK_NOTE_BLOCK_BASS
   on_arrival: ENTITY_PLAYER_LEVELUP
 
-# ─────────────────────────────────────────────
-#   Messages  (supports MiniMessage format)
-# ─────────────────────────────────────────────
+# MiniMessage format: https://docs.advntr.dev/minimessage
 messages:
   prefix: "<dark_gray>[<red>✝</red> <white>DeathPin</white><dark_gray>] "
 
