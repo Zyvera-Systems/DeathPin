@@ -10,27 +10,27 @@ final class FoliaScheduler {
 
     private FoliaScheduler() {}
 
-    static SchedulerUtil.TaskHandle runRepeating(Plugin plugin, Player player, Runnable run, long delay, long period) {
-        ScheduledTask task = player.getScheduler().runAtFixedRate(plugin, t -> run.run(), null, delay, period);
-        return task != null ? new FoliaHandle(task) : NoopHandle.INSTANCE;
+    static PlatformScheduler.TaskHandle runRepeating(Plugin plugin, Player player, Runnable task, long delay, long period) {
+        ScheduledTask t = player.getScheduler().runAtFixedRate(plugin, st -> task.run(), null, delay, period);
+        return t != null ? new Handle(t) : NoopHandle.INSTANCE;
     }
 
-    static void runDelayed(Plugin plugin, Player player, Runnable run, long delay) {
-        player.getScheduler().runDelayed(plugin, t -> run.run(), null, delay);
+    static void runDelayed(Plugin plugin, Player player, Runnable task, long delay) {
+        player.getScheduler().runDelayed(plugin, st -> task.run(), null, delay);
     }
 
-    static void runSync(Plugin plugin, Runnable run) {
-        Bukkit.getGlobalRegionScheduler().run(plugin, t -> run.run());
+    static void runSync(Plugin plugin, Runnable task) {
+        Bukkit.getGlobalRegionScheduler().run(plugin, st -> task.run());
     }
 
-    private static final class FoliaHandle implements SchedulerUtil.TaskHandle {
+    private static final class Handle implements PlatformScheduler.TaskHandle {
         private final ScheduledTask task;
-        FoliaHandle(ScheduledTask task) { this.task = task; }
+        Handle(ScheduledTask task) { this.task = task; }
         @Override public void cancel()         { task.cancel(); }
         @Override public boolean isCancelled() { return task.isCancelled(); }
     }
 
-    private enum NoopHandle implements SchedulerUtil.TaskHandle {
+    private enum NoopHandle implements PlatformScheduler.TaskHandle {
         INSTANCE;
         @Override public void cancel()         {}
         @Override public boolean isCancelled() { return true; }
